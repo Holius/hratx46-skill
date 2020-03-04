@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+import { Messages } from "./Messages";
+
 export default function App() {
   useEffect(() => {
     axios
@@ -12,5 +14,9 @@ export default function App() {
         console.log(error);
       });
   });
-  return <div>Hello World</div>;
+  return (
+    <div>
+      <Messages />
+    </div>
+  );
 }

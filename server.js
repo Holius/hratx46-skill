@@ -1,5 +1,7 @@
 const express = require("express");
 const app = express();
+const server = require("http").createServer(app);
+const io = require("socket.io")(server);
 const path = require("path");
 const port = process.env.PORT || 3000;
 const cookieSession = require("cookie-session");
@@ -13,6 +15,33 @@ var pool = mysql.createPool({
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_DB
+});
+
+let connectedUsers = {};
+
+io.on("connection", socket => {
+  console.log("connected to" + socket);
+
+  socket.on("log", user => {
+    console.log(socket.id, user);
+    connectedUsers[user] = { socketId: socket.id, username: user };
+
+    console.log(connectedUsers);
+
+    socket.on("private", (target, message) => {
+      console.log("hiii");
+      if (connectedUsers[target]) {
+        console.log("hi");
+        const id = connectedUsers[target].socketId;
+        io.to(`${id}`).emit("pm", message);
+      }
+    });
+
+    // socket.on("disconnect", () => {
+    //   delete connectedUsers[username];
+    //   console.log("disconnected" + username);
+    // });
+  });
 });
 
 app.set("trust proxy", 1);
@@ -30,20 +59,11 @@ app.use(
 app.route("/test").get((req, res) => {
   pool.query(`SELECT * FROM test`, function(error, results) {
     if (error) {
-      console.log(
-        "bye",
-        process.env.DB_HOST,
-        process.env.DB_USER,
-        process.env.DB_PASS,
-        process.env.DB_DB
-      );
-
       res.status(500).send();
     } else {
-      console.log("hi");
       res.status(200).send(results);
     }
   });
 });
 
-app.listen(port, () => console.log("port " + port + " is on"));
+server.listen(port, () => console.log("port " + port + " is on"));
