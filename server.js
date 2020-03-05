@@ -86,7 +86,8 @@ app.post("/user/login", (req, res) => {
         console.log("it's a match");
         req.session.id = uuidv4();
         req.session.username = username;
-        res.status(201).send();
+
+        res.status(201).send(username);
       }
     } else {
       res.status(500).send();
