@@ -7,33 +7,40 @@ import ChatBox from "./ChatBox";
 
 export default function LoginPage(props) {
   const [username, setUsername] = useState("");
+  const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [logged, setLogged] = useState(false);
   const [socket, setSocket] = useState(io(socketUrl));
   const [chats, dispatch] = useReducer(reducer, []);
   const [temp, setTemp] = useState("");
+  const [showChat, setShowChat] = useState(false);
 
   const socketUrl = "http://localhost:3000";
-  const initSocket = io(socketUrl);
   function reducer(state, action) {
     switch (action.type) {
       case "add-message":
-        return [...state, { chat: action.chat, className: action.className }];
-
+        return [
+          ...state,
+          { message_text: action.message, from_username: action.id }
+        ];
+      case "add-history":
+        return [...state, ...action.message];
       default:
         return state;
     }
   }
 
   useEffect(() => {
-    if (logged) {
-      console.log(chats);
-      socket.on("pm", addMessage.bind(null, "interlocutor"));
-    }
-  }, [logged, username]);
+    console.log(chats);
+    socket.on("pm", addMessage.bind(null, "interlocutor"));
+  }, []);
 
-  const addMessage = (className, chat) => {
-    dispatch({ type: "add-message", chat, className });
+  const addMessage = (id, message) => {
+    dispatch({ type: "add-message", message, id });
+  };
+
+  const addHistory = message => {
+    dispatch({ type: "add-history", message });
   };
 
   const submitLogIn = () => {
@@ -56,9 +63,11 @@ export default function LoginPage(props) {
           password
         })
         .then(data => {
+          console.log(data.data.id);
           setLogged(true);
-          socket.emit("login", data.data);
-          console.log(data.data, "<-- data.data");
+          setId(data.data.id);
+          socket.emit("login", data.data.username, null);
+
           console.log("logged in");
         })
         .catch(error => {
@@ -107,11 +116,37 @@ export default function LoginPage(props) {
   } else {
     return (
       <div>
-        <ChatBox chats={chats} socket={socket} username={temp} />
+        <button
+          onClick={() => {
+            setShowChat(true);
+          }}
+        >
+          Enter that Chat
+        </button>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+
+        <div>
+          {showChat ? (
+            <ChatBox
+              chats={chats}
+              socket={socket}
+              username={temp}
+              addMessage={addMessage}
+              addHistory={addHistory}
+              id={id}
+            />
+          ) : (
+            "no chat here"
+          )}
+        </div>
         <button onClick={submitLogOut}>Log Out</button>
       </div>
     );
   }
 }
-
-// onSubmit={}

@@ -2,25 +2,65 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 // import io from "socket.io-client";
 
-import InputField from "./InputField.jsx";
+import InputField from "./InputField";
+import useUnload from "./useUnload";
 
-export default function ChatBox({ chats, socket, username }) {
+export default function ChatBox({
+  chats,
+  socket,
+  username,
+  addMessage,
+  addHistory,
+  id
+}) {
   const checkTarget = username => {
     if (username === "a") {
-      console.log("asdf");
       return "b";
     } else {
-      console.log("whi", username);
       return "a";
     }
   };
   const [message, setMessage] = useState("");
   const [target, setTarget] = useState(checkTarget(username));
 
-  console.log(target);
+  useEffect(() => {
+    const mount = () => {
+      socket.emit("mount", target);
+      axios
+        .post("chat/history", {
+          username,
+          target
+        })
+        .then(data => {
+          addHistory(data.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    };
+    mount();
+  }, []);
+
+  useUnload(() => {
+    socket.emit("unmount");
+    console.log("will unmount");
+  });
+
+  let displayChat = [];
+  for (let i = 0; i < chats.length; i++) {
+    displayChat.push(
+      <div
+        className={id === chats[i].from_username ? "self" : "interlocutor"}
+        key={i}
+      >
+        {chats[i].message_text}
+      </div>
+    );
+  }
+
   return (
     <div>
-      <div>{(username === "a") + "          " + target}</div>
+      <div>{target}</div>
       <InputField
         forid="Message"
         type="text"
@@ -29,11 +69,17 @@ export default function ChatBox({ chats, socket, username }) {
       />
       <button
         onClick={event => {
-          addMessage("self", message);
+          addMessage(id, message);
           console.log(message);
           socket.emit("private", target, message);
         }}
-      ></button>
+      >
+        Send
+      </button>
+      <div className="ohyeah">
+        {displayChat}
+        <div id="anchor"></div>
+      </div>
     </div>
   );
 }

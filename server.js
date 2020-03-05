@@ -20,23 +20,83 @@ var pool = mysql.createPool({
 
 const connectedUsers = {};
 
+const getUserIds = (username, target, cb) => {
+  pool.query(
+    `SELECT user_id FROM user WHERE username='${username}' OR username='${target}'`,
+    function(error, results) {
+      if (error) {
+        console.log(error);
+      } else {
+        cb(results[0].user_id, results[1].user_id);
+      }
+    }
+  );
+};
+
+const insertMessage = (message, bool, username, target) => {
+  getUserIds(username, target, (userA, userB) => {
+    pool.query(
+      `INSERT INTO message (message_text, visited, from_username, to_username) VALUES ('${message}', '${bool}', '${userA}', '${userB}')`,
+      function(error, results) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("inserted into message", results);
+        }
+      }
+    );
+  });
+};
+
 io.on("connection", socket => {
   console.log("connected to" + socket);
 
-  socket.on("login", user => {
-    console.log(socket.id, user);
-    connectedUsers[user] = { socketId: socket.id, username: user };
+  socket.on("login", (user, target) => {
+    console.log(target);
+    socket.username = user;
+    connectedUsers[user] = {
+      socketId: socket.id,
+      username: user,
+      chatroom: target
+    };
+
+    socket.on("mount", target => {
+      const username = socket.username;
+      connectedUsers[username].chatroom = target;
+      console.log("mount", connectedUsers);
+    });
+
+    socket.on("unmount", () => {
+      const username = socket.username;
+      connectedUsers[username].chatroom = null;
+      console.log("unmount", connectedUsers);
+    });
 
     console.log(connectedUsers);
 
     socket.on("private", (target, message) => {
-      console.log("hiii");
+      const username = socket.username;
+      console.log(username, "username", target, "target");
       if (connectedUsers[target]) {
-        console.log("hi");
-        const id = connectedUsers[target].socketId;
-        io.to(`${id}`).emit("pm", message);
+        const { chatroom, socketId } = connectedUsers[target];
+        if (chatroom !== username) {
+          // insertMessage(message, false, username, target);
+          console.log("1: wrong chatroom");
+        } else {
+          io.to(`${socketId}`).emit("pm", message);
+          // insertMessage(message, true, username, target);
+          console.log("2: connected to the same chatroom");
+        }
+      } else {
+        // insertMessage(message, false, username, target);
+        console.log("3: target user is not connected");
       }
     });
+
+    // message_text TEXT,
+    // visited BOOLEAN,
+    // from_username INT NOT NULL,
+    // to_username INT NOT NULL,
 
     // socket.on("disconnect", () => {
     //   delete connectedUsers[username];
@@ -81,13 +141,15 @@ app.post("/user/login", (req, res) => {
     error,
     results
   ) {
+    console.log(results);
     if (results[0] !== undefined) {
       if (await bcrypt.compare(password, results[0].password)) {
         console.log("it's a match");
+        const id = results[0].user_id;
         req.session.id = uuidv4();
         req.session.username = username;
 
-        res.status(201).send(username);
+        res.status(200).send({ username, id });
       }
     } else {
       res.status(500).send();
@@ -98,6 +160,35 @@ app.post("/user/login", (req, res) => {
 app.get("/user/logout", (req, res) => {
   req.session = null;
   res.status(201).send();
+});
+
+const setVisited = (userA, userB) => {
+  pool.query(
+    `UPDATE message SET visited=true WHERE from_username='${userA}' AND to_username='${userB}' OR from_username='${userB}' AND to_username='${userA}' ORDER BY message_date ASC`,
+    function(error, results) {
+      if (error) {
+        res.status(500).send();
+      }
+    }
+  );
+};
+
+app.post("/chat/history", (req, res) => {
+  const { username, target } = req.body;
+  getUserIds(username, target, (userA, userB) => {
+    pool.query(
+      `SELECT * FROM message WHERE from_username='${userA}' AND to_username='${userB}' OR from_username='${userB}' AND to_username='${userA}' ORDER BY message_date ASC`,
+      function(error, results) {
+        if (results) {
+          setVisited(userA, userB);
+          res.status(200).send(results);
+        } else {
+          console.log(error);
+          res.status(500).send();
+        }
+      }
+    );
+  });
 });
 
 app.route("/test").get((req, res) => {

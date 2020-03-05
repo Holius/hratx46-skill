@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:100,200,300&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Roboto:100,200,300&display=swap");
 
 @import url("https://fonts.googleapis.com/css?family=Londrina+Outline&display=swap");
 
@@ -20,7 +20,7 @@ body {
   height: 90px;
 }
 .clearBackground {
-  background: #E5E5E5;
+  background: #e5e5e5;
   mix-blend-mode: normal;
   opacity: 0.4;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -30,7 +30,7 @@ body {
 button {
   font-family: Roboto;
   font-size: 24px;
-  background: #F0F0F0;
+  background: #f0f0f0;
   border-radius: 4px;
   width: 190px;
   height: 39px;
@@ -41,7 +41,7 @@ button {
 .inputText {
   width: 50%;
   height: 41px;
-  background: #E5E5E5;
+  background: #e5e5e5;
   box-shadow: inset 0px 4px 1px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
   border: none;
@@ -55,12 +55,9 @@ button {
   padding-left: 5px;
 }
 
-
-
-
 /* Front Page */
 .categorySquare img {
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, .5);
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
 }
 .homeQuoteContainer {
   background-color: #ffffff;
@@ -87,17 +84,16 @@ button {
 
 /* User Profile */
 .profileRow1 {
-
 }
 .userPhotoProfile {
   position: absolute;
   width: 140px;
   height: 130px;
-  left: calc(50% - 140px/2 - 129px);
+  left: calc(50% - 140px / 2 - 129px);
   top: 79px;
 
   /* background: url(photo-1551861568-c0afa6653bc1.jpg), url(photo-1551861568-c0afa6653bc1.jpg); */
-  border: 2px solid #FFFFFF;
+  border: 2px solid #ffffff;
   box-sizing: border-box;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 4px;
@@ -108,22 +104,21 @@ button {
   height: 170px;
   /* left: calc(50% - 253px/2 + 73.5px); */
   /* top: 79px; */
-  background: #F0F0F0;
+  background: #f0f0f0;
   border-radius: 4px;
 }
 
-
-
 /* top bar */
 .notificationDot:before {
-  content: ' \25CF';
+  content: " \25CF";
   vertical-align: 1ex;
   font-size: 28px;
   margin-left: -15px;
   margin-top: -15px;
-  color: #FF8C5B;
+  color: #ff8c5b;
 }
-button, .searchButton{
+button,
+.searchButton {
   display: flexbox;
   position: absolute;
   width: 41px;
@@ -144,21 +139,21 @@ button, .searchButton{
 .navDrawer {
   font-size: 24px;
   font-weight: lighter;
-  color: #98C460;
+  color: #98c460;
   background: #ffffff;
   width: 400px;
   height: 320px;
   padding: 20px;
 }
 .navLink:hover {
-  color: #38755D;
+  color: #38755d;
 }
-hr { 
-  display: block; 
-  overflow: hidden; 
-  border-style: inset; 
+hr {
+  display: block;
+  overflow: hidden;
+  border-style: inset;
   border-width: 0.5px;
-  background-color: #98C460;
+  background-color: #98c460;
   left: 3.14%;
   right: 7.97%;
   top: 21.18%;
@@ -170,5 +165,31 @@ hr {
   /* right: 40.34%; */
   /* top: 97.35%; */
   bottom: 2.65%;
-  border-bottom: 1px solid #98C460;
+  border-bottom: 1px solid #98c460;
+}
+
+.ohyeah {
+  height: 200px;
+  width: 200px;
+  border: 1px solid black;
+  /* overflow: auto; */
+  overflow: auto;
+  vertical-align: bottom;
+}
+
+.self {
+  color: red;
+  text-align: right;
+  overflow-anchor: none;
+}
+
+.interlocutor {
+  color: blue;
+  text-align: left;
+  overflow-anchor: none;
+}
+
+.ohyeah :last-child {
+  overflow-anchor: auto;
+  height: 1px;
 }
