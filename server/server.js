@@ -15,7 +15,7 @@ require("dotenv").config();
 const { chatHistory } = require("./routes/chatHistory");
 const { signInLogInRoutes } = require("./routes/signInLogIn");
 
-const { getUserIds, insertMessage, setVisited } = require("./helpers");
+const { getUserIds, insertMessage, setVisited } = require("./messageHelpers");
 pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,

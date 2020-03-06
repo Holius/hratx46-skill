@@ -63,11 +63,10 @@ export default function LoginPage(props) {
           password
         })
         .then(data => {
-          console.log(data.data.id);
           setLogged(true);
           setId(data.data.id);
           socket.emit("login", data.data.username, null);
-
+          console.log(document.cookie);
           console.log("logged in");
         })
         .catch(error => {

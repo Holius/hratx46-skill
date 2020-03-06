@@ -1,5 +1,3 @@
-// const { pool } = require("./server");
-
 // retrieves both user ids needed to send/receive messages
 const getUserIds = (username, target, cb) => {
   pool.query(
@@ -30,6 +28,7 @@ const insertMessage = (message, bool, username, target) => {
   });
 };
 
+//ensure previously unread messages are marked as visited
 const setVisited = (userA, userB) => {
   pool.query(
     `UPDATE message SET visited=true WHERE from_username='${userA}' AND to_username='${userB}' OR from_username='${userB}' AND to_username='${userA}' ORDER BY message_date ASC`,

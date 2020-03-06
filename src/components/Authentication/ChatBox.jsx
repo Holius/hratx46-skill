@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-// import io from "socket.io-client";
 
 import InputField from "./InputField";
 import useUnload from "./useUnload";
+
+// import { useParams } from "react-router-dom";
+// const { target } = useParams();
 
 export default function ChatBox({
   chats,
