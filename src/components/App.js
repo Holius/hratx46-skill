@@ -4,8 +4,8 @@ import useForm from "./CustomHooks";
 
 import FrontPage from "./FrontPage.jsx";
 import UserProfile from "./UserProfile.jsx";
-import LoginPage from "./LoginPage.jsx";
-import SignIn from "./SignIn.jsx";
+import LoginPage from "./Authentication/LoginPage.jsx";
+// import SignIn from "./SignIn.jsx";
 import NavBar from "./NavBar.jsx";
 
 export default function App() {
